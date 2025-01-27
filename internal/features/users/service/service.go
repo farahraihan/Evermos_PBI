@@ -84,14 +84,16 @@ func (us *UserServices) UpdateUser(userID uint, updatedUser users.User, src mult
 		updatedUser.Password = string(hashPassword)
 	}
 
-	imageURL, err := us.cloudinary.UploadToCloudinary(src, filename)
-	if err != nil {
-		log.Println("image upload failed: ", err)
-		return errors.New("failed to upload image, please try again later")
+	if src != nil && filename != "" {
+		imageURL, err := us.cloudinary.UploadToCloudinary(src, filename)
+		if err != nil {
+			log.Println("image upload failed: ", err)
+			return errors.New("failed to upload image, please try again later")
+		}
+		updatedUser.UserImage = imageURL
 	}
-	updatedUser.UserImage = imageURL
 
-	err = us.qry.UpdateUser(userID, updatedUser)
+	err := us.qry.UpdateUser(userID, updatedUser)
 	if err != nil {
 		log.Println("update user query error: ", err)
 		return errors.New("update failed, please try again later")

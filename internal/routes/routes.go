@@ -20,7 +20,7 @@ func UserRoute(e *echo.Echo, uh users.UHandler) {
 	u := e.Group("/users")
 	u.Use(JWTConfig())
 	u.PUT("", uh.UpdateUser())
-	u.DELETE("/:id", uh.DeleteUser())
+	u.DELETE("", uh.DeleteUser())
 	u.GET("", uh.GetUserByID())
 }
 

@@ -109,7 +109,7 @@ func (uh *UserHandler) UpdateUser() echo.HandlerFunc {
 
 		var src multipart.File
 		var filename string
-		image, err := c.FormFile("image")
+		image, err := c.FormFile("user_image")
 		if err == nil {
 			src, err = image.Open()
 			if err != nil {
@@ -127,25 +127,32 @@ func (uh *UserHandler) UpdateUser() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helpers.ResponseFormat(http.StatusBadRequest, "failed", "invalid input", nil))
 		}
 
-		parsedDate, err := time.Parse("2006-01-02", req.BirthDate)
-		if err != nil {
-			log.Println("failed to parse birth date:", err)
-			return c.JSON(http.StatusBadRequest, helpers.ResponseFormat(
-				http.StatusBadRequest, "failed", "invalid date format, use YYYY-MM-DD", nil))
+		var parsedDate time.Time
+		if req.BirthDate != "" {
+			parsedDate, err = time.Parse("2006-01-02", req.BirthDate)
+			if err != nil {
+				log.Println("failed to parse birth date:", err)
+				return c.JSON(http.StatusBadRequest, helpers.ResponseFormat(
+					http.StatusBadRequest, "failed", "invalid date format, use YYYY-MM-DD", nil))
+			}
 		}
 
 		updateUser := RegisterToUser(req, parsedDate)
 
-		exist, _ := uh.srv.IsEmailExist(updateUser.Email)
-		if exist {
-			log.Println("email has been registered")
-			return c.JSON(http.StatusBadRequest, helpers.ResponseFormat(http.StatusBadRequest, "failed", "email has been registered", nil))
+		if updateUser.Email != "" {
+			exist, _ := uh.srv.IsEmailExist(updateUser.Email)
+			if exist {
+				log.Println("email has been registered")
+				return c.JSON(http.StatusBadRequest, helpers.ResponseFormat(http.StatusBadRequest, "failed", "email has been registered", nil))
+			}
 		}
 
-		exist, _ = uh.srv.IsPhoneExist(updateUser.Phone)
-		if exist {
-			log.Println("phone has been registered")
-			return c.JSON(http.StatusBadRequest, helpers.ResponseFormat(http.StatusBadRequest, "failed", "phone has been registered", nil))
+		if updateUser.Password != "" {
+			exist, _ := uh.srv.IsPhoneExist(updateUser.Phone)
+			if exist {
+				log.Println("phone has been registered")
+				return c.JSON(http.StatusBadRequest, helpers.ResponseFormat(http.StatusBadRequest, "failed", "phone has been registered", nil))
+			}
 		}
 
 		err = uh.srv.UpdateUser(uint(userID), updateUser, src, filename)
