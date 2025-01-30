@@ -70,7 +70,7 @@ func (uh *UserHandler) Register() echo.HandlerFunc {
 
 		err = uh.srv.Register(newUser, src, image.Filename)
 		if err != nil {
-			log.Print("failed to register user")
+			log.Print("failed to register user: ", err)
 			return c.JSON(http.StatusInternalServerError, helpers.ResponseFormat(http.StatusInternalServerError, "failed", "registration unsuccessful", nil))
 		}
 

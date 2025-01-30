@@ -27,12 +27,16 @@ func (uq *UserQuery) Login(email string) (users.User, error) {
 	return result.ToUserEntity(), nil
 }
 
-func (uq *UserQuery) Register(newUsers users.User) error {
-	cnvData := ToUserQuery(newUsers)
+func (uq *UserQuery) Register(newUsers *users.User) error {
+	cnvData := ToUserQuery(*newUsers)
 	err := uq.db.Create(&cnvData).Error
 
 	if err != nil {
 		return err
+	}
+
+	if cnvData.ID != 0 {
+		newUsers.ID = cnvData.ID
 	}
 
 	return nil
