@@ -25,7 +25,7 @@ type User struct {
 
 type UQuery interface {
 	Login(email string) (User, error)
-	Register(newUser User) error
+	Register(newUser *User) error
 	UpdateUser(userID uint, updateUser User) error
 	DeleteUser(userID uint) error
 	GetUserByID(userID uint) (User, error)

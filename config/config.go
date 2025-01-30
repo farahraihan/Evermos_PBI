@@ -1,6 +1,7 @@
 package config
 
 import (
+	s_rep "evermos_pbi/internal/features/stores/repository"
 	u_rep "evermos_pbi/internal/features/users/repository"
 
 	"fmt"
@@ -61,7 +62,7 @@ func ConnectDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.AutoMigrate(&u_rep.User{})
+	err = db.AutoMigrate(&u_rep.User{}, &s_rep.Store{})
 	if err != nil {
 		return nil, err
 	}

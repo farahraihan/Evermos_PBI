@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"evermos_pbi/internal/features/stores"
 	"evermos_pbi/internal/features/users"
 	"evermos_pbi/internal/utils"
 	"log"
@@ -13,14 +14,16 @@ type UserServices struct {
 	pwd        utils.PassUtilInterface
 	jwt        utils.JwtUtilityInterface
 	cloudinary utils.CloudinaryUtilityInterface
+	sService   stores.SService
 }
 
-func NewUserServices(q users.UQuery, p utils.PassUtilInterface, j utils.JwtUtilityInterface, c utils.CloudinaryUtilityInterface) users.UService {
+func NewUserServices(q users.UQuery, p utils.PassUtilInterface, j utils.JwtUtilityInterface, c utils.CloudinaryUtilityInterface, s stores.SService) users.UService {
 	return &UserServices{
 		qry:        q,
 		pwd:        p,
 		jwt:        j,
 		cloudinary: c,
+		sService:   s,
 	}
 }
 
@@ -64,10 +67,25 @@ func (us *UserServices) Register(newUsers users.User, src multipart.File, filena
 	}
 	newUsers.UserImage = imageURL
 
-	err = us.qry.Register(newUsers)
+	err = us.qry.Register(&newUsers)
 	if err != nil {
 		log.Println("register query error: ", err)
 		return errors.New("registration failed, please try again later")
+	}
+
+	if newUsers.ID == 0 {
+		return errors.New("failed to generate user ID")
+	}
+
+	newStore := stores.Store{
+		StoreName: newUsers.Name + "'s Store", // Nama toko default
+		UserID:    newUsers.ID,                // ID user yang baru terdaftar
+	}
+
+	err = us.sService.AddStore(newStore, nil, "")
+	if err != nil {
+		log.Println("add store query error: ", err)
+		return errors.New("failed to add store, please try again later")
 	}
 
 	return nil
@@ -106,6 +124,12 @@ func (us *UserServices) DeleteUser(userID uint) error {
 	if err != nil {
 		log.Println("delete user query error: ", err)
 		return errors.New("delete failed, please try again later")
+	}
+
+	err = us.sService.DeleteStore(userID)
+	if err != nil {
+		log.Println("delete store query error: ", err)
+		return errors.New("failed to delete store, please try again later")
 	}
 
 	return nil
