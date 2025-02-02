@@ -2,6 +2,7 @@ package repository
 
 import (
 	"evermos_pbi/internal/features/stores"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -84,22 +85,25 @@ func (sq *StoreQuery) GetAllStores(limit uint, page uint, search string) ([]stor
 
 	offset := (page - 1) * limit
 
+	// Buat query dasar
 	qry := sq.db.Model(&Store{})
+
+	// Tambahkan filter pencarian jika search tidak kosong
 	if search != "" {
 		qry = qry.Where("store_name ILIKE ?", "%"+search+"%")
 	}
+
+	// Hitung total item
 	if err := qry.Count(&totalItems).Error; err != nil {
+		return nil, 0, fmt.Errorf("failed to count stores: %w", err)
+	}
+
+	// Tambahkan pagination & preload user dalam query yang sama
+	if err := qry.Preload("User").Limit(int(limit)).Offset(int(offset)).Find(&storesList).Error; err != nil {
 		return nil, 0, err
 	}
 
-	qry = sq.db.Preload("User").Limit(int(limit)).Offset(int(offset)).Find(&storesList)
-	if search != "" {
-		qry = qry.Where("store_name ILIKE ?", "%"+search+"%")
-	}
-	if qry.Error != nil {
-		return nil, 0, qry.Error
-	}
-
+	// Konversi hasil ke struct entities
 	storesEntities := make([]stores.Store, len(storesList))
 	for i, store := range storesList {
 		storesEntities[i] = store.ToStoreEntity()
@@ -113,5 +117,16 @@ func (sq *StoreQuery) IsOwnerExist(userID uint) (bool, error) {
 	if err := sq.db.Model(&stores.Store{}).Where("user_id = ?", userID).Count(&count).Error; err != nil {
 		return false, err
 	}
+	return count > 0, nil
+}
+
+func (sq *StoreQuery) IsStoreOwnedByUser(storeID uint, userID uint) (bool, error) {
+	var count int64
+
+	err := sq.db.Model(&stores.Store{}).Where("id = ? AND user_id = ?", storeID, userID).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+
 	return count > 0, nil
 }

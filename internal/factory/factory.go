@@ -21,6 +21,14 @@ import (
 	c_rep "evermos_pbi/internal/features/categories/repository"
 	c_srv "evermos_pbi/internal/features/categories/service"
 
+	p_hnd "evermos_pbi/internal/features/products/handler"
+	p_rep "evermos_pbi/internal/features/products/repository"
+	p_srv "evermos_pbi/internal/features/products/service"
+
+	l_hnd "evermos_pbi/internal/features/logproduct/handler"
+	l_rep "evermos_pbi/internal/features/logproduct/repository"
+	l_srv "evermos_pbi/internal/features/logproduct/service"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -48,10 +56,18 @@ func InitFactory(e *echo.Echo) {
 	cs := c_srv.NewCategoryService(cq, us)
 	ch := c_hnd.NewCategoryHandler(cs, jwt)
 
+	lq := l_rep.NewLogProductQuery(db)
+	ls := l_srv.NewLogProductService(lq)
+	lh := l_hnd.NewLogProductHandler(ls)
+
+	pq := p_rep.NewProductQuery(db)
+	ps := p_srv.NewProductService(pq, cloud, ss, ls)
+	ph := p_hnd.NewProductHandler(ps, jwt)
+
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 
-	routes.InitRoute(e, uh, sh, ah, ch)
+	routes.InitRoute(e, uh, sh, ah, ch, lh, ph)
 
 }

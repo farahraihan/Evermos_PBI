@@ -27,6 +27,7 @@ type SQuery interface {
 	GetStoreByID(storeID uint) (Store, error)
 	GetAllStores(limit uint, page uint, search string) ([]Store, uint, error)
 	IsOwnerExist(userID uint) (bool, error)
+	IsStoreOwnedByUser(storeID uint, userID uint) (bool, error)
 }
 
 type SService interface {
@@ -36,6 +37,7 @@ type SService interface {
 	GetStoreByUserID(userID uint) (Store, error)
 	GetStoreByID(storeID uint) (Store, error)
 	GetAllStores(limit uint, page uint, search string) ([]Store, uint, error)
+	IsStoreOwnedByUser(storeID uint, userID uint) (bool, error)
 }
 
 type SHandler interface {
