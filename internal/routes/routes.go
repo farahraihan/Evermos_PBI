@@ -4,6 +4,8 @@ import (
 	"evermos_pbi/config"
 	"evermos_pbi/internal/features/address"
 	"evermos_pbi/internal/features/categories"
+	"evermos_pbi/internal/features/logproduct"
+	"evermos_pbi/internal/features/products"
 	"evermos_pbi/internal/features/stores"
 	"evermos_pbi/internal/features/users"
 
@@ -12,7 +14,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func InitRoute(e *echo.Echo, uh users.UHandler, sh stores.SHandler, ah address.AHandler, ch categories.CHandler) {
+func InitRoute(e *echo.Echo, uh users.UHandler, sh stores.SHandler, ah address.AHandler, ch categories.CHandler, lh logproduct.LHandler, ph products.PHandler) {
 	e.POST("/login", uh.Login())
 	e.POST("/register", uh.Register())
 	e.GET("/stores/:id", sh.GetStoreByID())
@@ -23,11 +25,17 @@ func InitRoute(e *echo.Echo, uh users.UHandler, sh stores.SHandler, ah address.A
 	e.GET("/village/:district_id", ah.GetVillage())
 	e.GET("/category/:id", ch.GetCategoryByID())
 	e.GET("/category", ch.GetAllCategories())
+	e.GET("/product/:id", ph.GetProductByID())
+	e.GET("/product/store/:store_id", ph.GetProductsByStoreID())
+	e.GET("/product", ph.GetAllProducts())
+	e.GET("/logProduct/:id", lh.GetLogProductByID())
+	e.GET("/logProduct", lh.GetAllLogProduct())
 
 	UserRoute(e, uh)
 	StoreRoute(e, sh)
 	AddressRoute(e, ah)
 	CategoryRoute(e, ch)
+	ProductRoute(e, ph)
 }
 
 func UserRoute(e *echo.Echo, uh users.UHandler) {
@@ -62,6 +70,14 @@ func CategoryRoute(e *echo.Echo, ch categories.CHandler) {
 	c.POST("", ch.AddCategory())
 	c.PUT("/:id", ch.UpdateCategory())
 	c.DELETE("/:id", ch.DeleteCategory())
+}
+
+func ProductRoute(e *echo.Echo, ph products.PHandler) {
+	p := e.Group("/product")
+	p.Use(JWTConfig())
+	p.POST("", ph.AddProduct())
+	p.PUT("/:id", ph.UpdateProduct())
+	p.DELETE("/:id", ph.DeleteProduct())
 }
 
 func JWTConfig() echo.MiddlewareFunc {

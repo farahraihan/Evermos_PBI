@@ -22,8 +22,12 @@ func NewStoreService(q stores.SQuery, c utils.CloudinaryUtilityInterface) stores
 
 func (ss *StoreServices) AddStore(newStore stores.Store, src multipart.File, filename string) error {
 	ownerExist, err := ss.qry.IsOwnerExist(newStore.UserID)
+	if err != nil {
+		log.Println("failed to get owner: ", err)
+		return errors.New("failed to get owner")
+	}
 	if ownerExist {
-		log.Println("user already has a store: ", err)
+		log.Println("user already has a store")
 		return errors.New("user already has a store")
 	}
 
@@ -104,4 +108,8 @@ func (ss *StoreServices) GetAllStores(limit uint, page uint, search string) ([]s
 	}
 
 	return stores, totalItems, nil
+}
+
+func (ss *StoreServices) IsStoreOwnedByUser(storeID uint, userID uint) (bool, error) {
+	return ss.qry.IsStoreOwnedByUser(storeID, userID)
 }
