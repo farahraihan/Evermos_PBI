@@ -45,3 +45,7 @@ func (ds *DetailTransactionServices) DeleteDetailTransaction(productID uint, tra
 
 	return nil
 }
+
+func (ds *DetailTransactionServices) IsProductInDetail(productID uint) (bool, error) {
+	return ds.qry.IsProductInDetail(productID)
+}

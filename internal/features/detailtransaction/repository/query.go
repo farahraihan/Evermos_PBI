@@ -55,3 +55,12 @@ func (dq *DetailTransactionQuery) DeleteDetailTransaction(ProductID uint, Transa
 
 	return nil
 }
+
+func (dq *DetailTransactionQuery) IsProductInDetail(ProductID uint) (bool, error) {
+	var count int64
+	err := dq.db.Model(&DetailTransaction{}).Where("product_id = ?", ProductID).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
