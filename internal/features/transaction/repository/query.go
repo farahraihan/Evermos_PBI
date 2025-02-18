@@ -1,9 +1,9 @@
 package repository
 
 import (
+	"errors"
 	"evermos_pbi/internal/features/detailtransaction"
 	"evermos_pbi/internal/features/transaction"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -52,18 +52,23 @@ func (tq *TransactionQuery) GetTransactionByStatusCart(transactionID uint) (tran
 	var details []detailtransaction.DetailTransaction
 	var convertedDetails []transaction.DetailTransaction2
 
-	// Ambil transaksi dengan status "cart"
-	qry := tq.db.Where("id = ? AND status = ?", transactionID, "cart").Preload("User").Preload("Address").First(&trx)
+	qry := tq.db.Where("id = ? AND status = ?", transactionID, "cart").First(&trx)
 	if qry.Error != nil {
 		return transaction.TransactionWithDetail{}, qry.Error
 	}
 
-	detailQry := tq.db.Where("transaction_id = ?", transactionID).Find(&details)
+	detailQry := tq.db.Preload("Product").Preload("Store").Where("transaction_id = ?", transactionID).Find(&details)
 	if detailQry.Error != nil {
 		return transaction.TransactionWithDetail{}, detailQry.Error
 	}
 
 	for _, d := range details {
+		if d.Product.ID == 0 {
+			return transaction.TransactionWithDetail{}, errors.New("product data is missing")
+		}
+		if d.Store.ID == 0 {
+			return transaction.TransactionWithDetail{}, errors.New("store data is missing")
+		}
 		totalPrice := (d.Product.ConsumenPrice) * float32(d.Quantity)
 		convertedDetails = append(convertedDetails, transaction.DetailTransaction2{
 			Quantity:    d.Quantity,
@@ -83,8 +88,6 @@ func (tq *TransactionQuery) GetTransactionByStatusCart(transactionID uint) (tran
 
 func (tq *TransactionQuery) GetTransactionHistory(userID uint, limit uint, page uint) ([]transaction.TransactionWithDetail, uint, error) {
 	var transactions []transaction.Transaction
-	var details []detailtransaction.DetailTransaction
-	var convertedDetails []transaction.DetailTransaction2
 	var totalCount int64
 
 	countQry := tq.db.Model(&transaction.Transaction{}).Where("user_id = ? AND (status = ? OR status = ?)", userID, "canceled", "completed").Count(&totalCount)
@@ -93,13 +96,11 @@ func (tq *TransactionQuery) GetTransactionHistory(userID uint, limit uint, page 
 	}
 
 	offset := (page - 1) * limit
+
 	qry := tq.db.Where("user_id = ? AND (status = ? OR status = ?)", userID, "canceled", "completed").
 		Limit(int(limit)).
 		Offset(int(offset)).
-		Preload("User").
-		Preload("Address").
 		Find(&transactions)
-
 	if qry.Error != nil {
 		return nil, 0, qry.Error
 	}
@@ -107,13 +108,25 @@ func (tq *TransactionQuery) GetTransactionHistory(userID uint, limit uint, page 
 	var transactionsWithDetails []transaction.TransactionWithDetail
 
 	for _, trx := range transactions {
+		var details []detailtransaction.DetailTransaction
+
 		detailQry := tq.db.Where("transaction_id = ?", trx.ID).Preload("Store").Preload("Product").Find(&details)
 		if detailQry.Error != nil {
 			return nil, 0, detailQry.Error
 		}
 
+		var convertedDetails []transaction.DetailTransaction2
+
 		for _, d := range details {
+			if d.Product.ID == 0 {
+				return nil, 0, errors.New("product data is missing")
+			}
+			if d.Store.ID == 0 {
+				return nil, 0, errors.New("store data is missing")
+			}
+
 			totalPrice := (d.Product.ConsumenPrice) * float32(d.Quantity)
+
 			convertedDetails = append(convertedDetails, transaction.DetailTransaction2{
 				Quantity:    d.Quantity,
 				StoreID:     d.StoreID,
@@ -138,21 +151,24 @@ func (tq *TransactionQuery) GetTransactionByID(transactionID uint) (transaction.
 	var details []detailtransaction.DetailTransaction
 	var convertedDetails []transaction.DetailTransaction2
 
-	qry := tq.db.Where("id = ?", transactionID).Preload("User").Preload("Address").First(&trx)
+	qry := tq.db.Where("id = ?", transactionID).First(&trx)
 	if qry.Error != nil {
-		if qry.Error == gorm.ErrRecordNotFound {
-			return transaction.TransactionWithDetail{}, fmt.Errorf("transaction not found")
-		}
 		return transaction.TransactionWithDetail{}, qry.Error
 	}
 
-	detailQry := tq.db.Where("transaction_id = ?", transactionID).Preload("Store").Preload("Product").Find(&details)
+	detailQry := tq.db.Preload("Product").Preload("Store").Where("transaction_id = ?", transactionID).Find(&details)
 	if detailQry.Error != nil {
 		return transaction.TransactionWithDetail{}, detailQry.Error
 	}
 
 	for _, d := range details {
-		totalPrice := (d.Product.ConsumenPrice * float32(d.Quantity))
+		if d.Product.ID == 0 {
+			return transaction.TransactionWithDetail{}, errors.New("product data is missing")
+		}
+		if d.Store.ID == 0 {
+			return transaction.TransactionWithDetail{}, errors.New("store data is missing")
+		}
+		totalPrice := (d.Product.ConsumenPrice) * float32(d.Quantity)
 		convertedDetails = append(convertedDetails, transaction.DetailTransaction2{
 			Quantity:    d.Quantity,
 			StoreID:     d.StoreID,

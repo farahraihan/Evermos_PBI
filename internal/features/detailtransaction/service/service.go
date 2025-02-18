@@ -26,8 +26,8 @@ func (ds *DetailTransactionServices) AddDetailTransaction(newDetailTransaction d
 	return nil
 }
 
-func (ds *DetailTransactionServices) UpdateDetailTransaction(productID uint, transactionID uint, updateDetailTransaction detailtransaction.DetailTransaction) error {
-	err := ds.qry.UpdateDetailTransaction(productID, transactionID, updateDetailTransaction)
+func (ds *DetailTransactionServices) UpdateDetailTransaction(productID uint, transactionID uint, quantity uint) error {
+	err := ds.qry.UpdateDetailTransaction(productID, transactionID, quantity)
 	if err != nil {
 		log.Println("update detail transaction query error: ", err)
 		return errors.New("failed to update detail transaction, please try again later")
@@ -46,6 +46,6 @@ func (ds *DetailTransactionServices) DeleteDetailTransaction(productID uint, tra
 	return nil
 }
 
-func (ds *DetailTransactionServices) IsProductInDetail(productID uint) (bool, error) {
-	return ds.qry.IsProductInDetail(productID)
+func (ds *DetailTransactionServices) IsProductInDetail(productID uint, transactionID uint) (bool, error) {
+	return ds.qry.IsProductInDetail(productID, transactionID)
 }

@@ -27,28 +27,36 @@ func (ts *TransactionServices) AddTransaction(newTransaction transaction.Transac
 	}
 
 	if trxID == 0 {
+		newTransaction.Status = "cart"
 		err = ts.qry.AddTransaction(&newTransaction)
 		if err != nil {
 			log.Println("add transaction query error: ", err)
 			return errors.New("failed to add transaction, please try again later")
 		}
+
+		if newTransaction.ID == 0 {
+			log.Println("get transaction query error: ", err)
+			return errors.New("failed to get transaction ID, please try again later")
+		}
+
+		trxID = newTransaction.ID
 	}
 
 	newDetailTransaction := detailtransaction.DetailTransaction{
 		Quantity:      detail.Quantity,
 		StoreID:       detail.StoreID,
 		ProductID:     detail.ProductID,
-		TransactionID: newTransaction.ID,
+		TransactionID: trxID,
 	}
 
-	isProduct, err := ts.dService.IsProductInDetail(detail.ProductID)
+	isProduct, err := ts.dService.IsProductInDetail(newDetailTransaction.ProductID, newDetailTransaction.TransactionID)
 	if err != nil {
 		log.Println("failed to check product in detail transaction: ", err)
 		return errors.New("failed to check product in cart")
 	}
 
 	if isProduct {
-		err = ts.dService.UpdateDetailTransaction(detail.ProductID, newDetailTransaction.ID, newDetailTransaction)
+		err = ts.dService.UpdateDetailTransaction(newDetailTransaction.ProductID, newDetailTransaction.TransactionID, newDetailTransaction.Quantity)
 		log.Println("update detail transaction query error: ", err)
 		return errors.New("failed to update detail transaction, please try again later")
 	}
@@ -74,11 +82,7 @@ func (ts *TransactionServices) UpdateDetailTransaction(userID uint, transactionI
 		return errors.New("user not the owner of this transaction")
 	}
 
-	updateDetailTransaction := detailtransaction.DetailTransaction{
-		Quantity: quantity,
-	}
-
-	err = ts.dService.UpdateDetailTransaction(productID, transactionID, updateDetailTransaction)
+	err = ts.dService.UpdateDetailTransaction(productID, transactionID, quantity)
 	if err != nil {
 		log.Println("update detail transaction query error : ", err)
 		return errors.New("failed to update detail transaction, please try again later")
