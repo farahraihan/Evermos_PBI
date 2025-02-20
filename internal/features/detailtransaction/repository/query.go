@@ -29,14 +29,14 @@ func (dq *DetailTransactionQuery) AddDetailTransaction(newDetailTransaction deta
 
 func (dq *DetailTransactionQuery) UpdateDetailTransaction(productID uint, transactionID uint, quantity uint) error {
 	var existingDetailTransaction DetailTransaction
-	err := dq.db.Where("product_id ? AND transaction_id = ?", productID, transactionID).First(&existingDetailTransaction).Error
+	err := dq.db.Where("product_id = ? AND transaction_id = ?", productID, transactionID).First(&existingDetailTransaction).Error
 	if err != nil {
 		return err
 	}
 
 	newQuantity := existingDetailTransaction.Quantity + quantity
 
-	qry := dq.db.Model(&DetailTransaction{}).Where("product_id ? AND transaction_id = ?", productID, transactionID).Update("quantity", newQuantity)
+	qry := dq.db.Model(&DetailTransaction{}).Where("product_id = ? AND transaction_id = ?", productID, transactionID).Update("quantity", newQuantity)
 
 	if qry.Error != nil {
 		return qry.Error

@@ -29,6 +29,13 @@ import (
 	l_rep "evermos_pbi/internal/features/logproduct/repository"
 	l_srv "evermos_pbi/internal/features/logproduct/service"
 
+	t_hnd "evermos_pbi/internal/features/transaction/handler"
+	t_rep "evermos_pbi/internal/features/transaction/repository"
+	t_srv "evermos_pbi/internal/features/transaction/service"
+
+	d_rep "evermos_pbi/internal/features/detailtransaction/repository"
+	d_srv "evermos_pbi/internal/features/detailtransaction/service"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -64,10 +71,17 @@ func InitFactory(e *echo.Echo) {
 	ps := p_srv.NewProductService(pq, cloud, ss, ls)
 	ph := p_hnd.NewProductHandler(ps, jwt)
 
+	dq := d_rep.NewDetailTransactionQuery(db)
+	ds := d_srv.NewDetailTransactionService(dq)
+
+	tq := t_rep.NewTransactionQuery(db)
+	ts := t_srv.NewTransactionService(tq, ds)
+	th := t_hnd.NewTransactionHandler(ts, jwt)
+
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 
-	routes.InitRoute(e, uh, sh, ah, ch, lh, ph)
+	routes.InitRoute(e, uh, sh, ah, ch, lh, ph, th)
 
 }
