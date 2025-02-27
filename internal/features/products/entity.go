@@ -36,6 +36,9 @@ type PQuery interface {
 	GetProductsByStoreID(storeID uint, limit uint, page uint, search string) ([]Product, uint, error)
 	GetAllProducts(limit uint, page uint, search string) ([]Product, uint, error)
 	IsProductOwnedByUser(productID uint, userID uint) (bool, error)
+	IsStock(productID uint, n uint) (bool, error)
+	IncreaseStock(productID uint, n uint) error
+	DecreaseStock(productID uint, n uint) error
 }
 
 type PService interface {
@@ -45,6 +48,9 @@ type PService interface {
 	GetProductByID(productID uint) (Product, error)
 	GetProductsByStoreID(storeID uint, limit uint, page uint, search string) ([]Product, uint, error)
 	GetAllProducts(limit uint, page uint, search string) ([]Product, uint, error)
+	IsStock(productID uint, n uint) (bool, error)
+	IncreaseStock(productID uint, n uint) error
+	DecreaseStock(productID uint, n uint) error
 }
 
 type PHandler interface {

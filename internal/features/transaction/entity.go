@@ -2,8 +2,6 @@ package transaction
 
 import (
 	"evermos_pbi/internal/features/address"
-	"evermos_pbi/internal/features/products"
-	"evermos_pbi/internal/features/stores"
 	"evermos_pbi/internal/features/users"
 	"time"
 
@@ -22,39 +20,34 @@ type Transaction struct {
 }
 
 type DetailTransaction2 struct {
-	ID          uint
 	Quantity    uint
 	StoreID     uint
 	StoreName   string
 	ProductID   uint
 	ProductName string
-	TotalPrice  string
-	Store       stores.Store     `gorm:"foreignKey:StoreID"`
-	Product     products.Product `gorm:"foreignKey:ProductID"`
-	CreatedAt   time.Time        `gorm:"default:current_timestamp"`
-	UpdatedAt   time.Time        `gorm:"default:current_timestamp"`
+	TotalPrice  float32
 }
 
 type TransactionWithDetail struct {
-	Transaction       Transaction
+	Trx               Transaction
 	DetailTransaction []DetailTransaction2
 }
 
 type TQuery interface {
 	AddTransaction(newTransaction *Transaction) error
-	UpdateDetailTransaction(transactionID uint, productID uint) error
-	DeleteTransaction(transactionID uint, productID uint) error
-	UpdateTransaction(transactionID uint) error
+	UpdateTransaction(transactionID uint, status string) error
 	GetTransactionByStatusCart(transactionID uint) (TransactionWithDetail, error)
 	GetTransactionHistory(userID uint, limit uint, page uint) ([]TransactionWithDetail, uint, error)
 	GetTransactionByID(transactionID uint) (TransactionWithDetail, error)
+	CheckTransactionInCart(userID uint) (uint, error)
+	IsTransactionOwner(userID uint, transactionID uint) (bool, error)
 }
 
 type TService interface {
-	AddTransaction(newTransaction Transaction, TransactionID uint, newDetailTransaction DetailTransaction2) error
-	UpdateDetailTransaction(userID uint, transactionID uint, productID uint) error
+	AddTransaction(newTransaction Transaction, newDetailTransaction DetailTransaction2) error
+	UpdateDetailTransaction(userID uint, transactionID uint, productID uint, quantity uint) error
 	DeleteTransaction(userID uint, transactionID uint, productID uint) error
-	UpdateTransaction(userID uint, transactionID uint) error
+	UpdateTransaction(userID uint, transactionID uint, status string) error
 	GetTransactionByStatusCart(userID uint, transactionID uint) (TransactionWithDetail, error)
 	GetTransactionHistory(userID uint, limit uint, page uint) ([]TransactionWithDetail, uint, error)
 	GetTransactionByID(userID uint, transactionID uint) (TransactionWithDetail, error)

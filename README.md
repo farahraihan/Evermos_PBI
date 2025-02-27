@@ -25,6 +25,6 @@ Evermos Commerce merupakan sebuah project backend sederhana yang dirancang untuk
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white) 
 
 ## 📋 API Documentation (OpenAPI Swagger) 
-Explore Details EcoPoints Documentation (OpenAPI) :[OpenAPI](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
+Explore Details Evermos Commerce Documentation (OpenAPI) :[OpenAPI](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
 
 

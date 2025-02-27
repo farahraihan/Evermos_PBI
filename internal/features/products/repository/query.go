@@ -142,3 +142,54 @@ func (pq *ProductQuery) IsProductOwnedByUser(productID uint, userID uint) (bool,
 
 	return product.Store.UserID == userID, nil
 }
+
+func (pq *ProductQuery) IsStock(productID uint, n uint) (bool, error) {
+	var product Product
+
+	err := pq.db.First(&product, productID).Error
+	if err != nil {
+		return false, err
+	}
+
+	if n <= product.Stock {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (pq *ProductQuery) IncreaseStock(productID uint, n uint) error {
+	var product Product
+
+	err := pq.db.First(&product, productID).Error
+	if err != nil {
+		return err
+	}
+
+	product.Stock += n
+
+	err = pq.db.Save(&product).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (pq *ProductQuery) DecreaseStock(productID uint, n uint) error {
+	var product Product
+
+	err := pq.db.First(&product, productID).Error
+	if err != nil {
+		return err
+	}
+
+	product.Stock -= n
+
+	err = pq.db.Save(&product).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -173,3 +173,27 @@ func (ps *ProductServices) GetProductsByStoreID(storeID uint, limit uint, page u
 
 	return products, totalItems, nil
 }
+
+func (ps *ProductServices) IsStock(productID uint, n uint) (bool, error) {
+	return ps.qry.IsStock(productID, n)
+}
+
+func (ps *ProductServices) IncreaseStock(productID uint, n uint) error {
+	err := ps.qry.IncreaseStock(productID, n)
+	if err != nil {
+		log.Println("failed to update product stock: ", err)
+		return errors.New("failed to increase stock")
+	}
+
+	return nil
+}
+
+func (ps *ProductServices) DecreaseStock(productID uint, n uint) error {
+	err := ps.qry.DecreaseStock(productID, n)
+	if err != nil {
+		log.Println("failed to update product stock: ", err)
+		return errors.New("failed to decrease stock")
+	}
+
+	return nil
+}

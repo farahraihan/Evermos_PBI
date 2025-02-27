@@ -22,12 +22,16 @@ type DetailTransaction struct {
 
 type DQuery interface {
 	AddDetailTransaction(newDetailTransaction DetailTransaction) error
-	UpdateDetailTransaction(ProductID uint, TransactionID uint, updateDetailTransaction DetailTransaction) error
-	DeleteDetailTransaction(ProductID uint, TransactionID uint) error
+	UpdateDetailTransaction(productID uint, transactionID uint, quantity uint) error
+	DeleteDetailTransaction(productID uint, transactionID uint) error
+	GetDetailTransactions(transactionID uint) ([]DetailTransaction, error)
+	IsProductInDetail(productID uint, transactionID uint) (bool, error)
 }
 
 type DService interface {
 	AddDetailTransaction(newDetailTransaction DetailTransaction) error
-	UpdateDetailTransaction(ProductID uint, TransactionID uint, updateDetailTransaction DetailTransaction) error
-	DeleteDetailTransaction(ProductID uint, TransactionID uint) error
+	UpdateDetailTransaction(productID uint, transactionID uint, quantity uint) error
+	DeleteDetailTransaction(productID uint, transactionID uint) error
+	GetDetailTransactions(transactionID uint) ([]DetailTransaction, error)
+	IsProductInDetail(productID uint, transactionID uint) (bool, error)
 }

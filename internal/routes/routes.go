@@ -7,6 +7,7 @@ import (
 	"evermos_pbi/internal/features/logproduct"
 	"evermos_pbi/internal/features/products"
 	"evermos_pbi/internal/features/stores"
+	"evermos_pbi/internal/features/transaction"
 	"evermos_pbi/internal/features/users"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -14,7 +15,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func InitRoute(e *echo.Echo, uh users.UHandler, sh stores.SHandler, ah address.AHandler, ch categories.CHandler, lh logproduct.LHandler, ph products.PHandler) {
+func InitRoute(e *echo.Echo, uh users.UHandler, sh stores.SHandler, ah address.AHandler, ch categories.CHandler, lh logproduct.LHandler, ph products.PHandler, th transaction.THandler) {
 	e.POST("/login", uh.Login())
 	e.POST("/register", uh.Register())
 	e.GET("/stores/:id", sh.GetStoreByID())
@@ -36,6 +37,7 @@ func InitRoute(e *echo.Echo, uh users.UHandler, sh stores.SHandler, ah address.A
 	AddressRoute(e, ah)
 	CategoryRoute(e, ch)
 	ProductRoute(e, ph)
+	TransactionRoute(e, th)
 }
 
 func UserRoute(e *echo.Echo, uh users.UHandler) {
@@ -78,6 +80,19 @@ func ProductRoute(e *echo.Echo, ph products.PHandler) {
 	p.POST("", ph.AddProduct())
 	p.PUT("/:id", ph.UpdateProduct())
 	p.DELETE("/:id", ph.DeleteProduct())
+}
+
+func TransactionRoute(e *echo.Echo, th transaction.THandler) {
+	t := e.Group("/transaction")
+	t.Use(JWTConfig())
+	t.POST("/cart", th.AddTransaction())
+	t.PUT("/cart", th.UpdateDetailTransaction())
+	t.DELETE("/cart", th.DeleteTransaction())
+	t.DELETE("/cart/:transaction_id", th.UpdateTransactionStatusCanceled())
+	t.POST("/checkout/:transaction_id", th.UpdateTransactionStatusCompleted())
+	t.GET("/cart/:transaction_id", th.GetTransactionByStatusCart())
+	t.GET("/history", th.GetTransactionHistory())
+	t.GET("/:transaction_id", th.GetTransactionByID())
 }
 
 func JWTConfig() echo.MiddlewareFunc {
