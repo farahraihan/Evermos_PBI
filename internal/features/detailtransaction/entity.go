@@ -24,6 +24,7 @@ type DQuery interface {
 	AddDetailTransaction(newDetailTransaction DetailTransaction) error
 	UpdateDetailTransaction(productID uint, transactionID uint, quantity uint) error
 	DeleteDetailTransaction(productID uint, transactionID uint) error
+	GetDetailTransactions(transactionID uint) ([]DetailTransaction, error)
 	IsProductInDetail(productID uint, transactionID uint) (bool, error)
 }
 
@@ -31,5 +32,6 @@ type DService interface {
 	AddDetailTransaction(newDetailTransaction DetailTransaction) error
 	UpdateDetailTransaction(productID uint, transactionID uint, quantity uint) error
 	DeleteDetailTransaction(productID uint, transactionID uint) error
+	GetDetailTransactions(transactionID uint) ([]DetailTransaction, error)
 	IsProductInDetail(productID uint, transactionID uint) (bool, error)
 }

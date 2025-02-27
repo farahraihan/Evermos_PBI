@@ -2,6 +2,7 @@ package repository
 
 import (
 	"evermos_pbi/internal/features/detailtransaction"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -29,6 +30,7 @@ func (dq *DetailTransactionQuery) AddDetailTransaction(newDetailTransaction deta
 
 func (dq *DetailTransactionQuery) UpdateDetailTransaction(productID uint, transactionID uint, quantity uint) error {
 	var existingDetailTransaction DetailTransaction
+
 	err := dq.db.Where("product_id = ? AND transaction_id = ?", productID, transactionID).First(&existingDetailTransaction).Error
 	if err != nil {
 		return err
@@ -70,4 +72,19 @@ func (dq *DetailTransactionQuery) IsProductInDetail(productID uint, transactionI
 		return false, err
 	}
 	return count > 0, nil
+}
+
+func (dq *DetailTransactionQuery) GetDetailTransactions(transactionID uint) ([]detailtransaction.DetailTransaction, error) {
+	var detailTransactionList []DetailTransaction
+
+	if err := dq.db.Where("transaction_id = ?", transactionID).Find(&detailTransactionList).Error; err != nil {
+		return nil, fmt.Errorf("failed to get detail transactions: %w", err)
+	}
+
+	detailEntities := make([]detailtransaction.DetailTransaction, len(detailTransactionList))
+	for i, detailtransaction := range detailTransactionList {
+		detailEntities[i] = detailtransaction.ToDetailTransactionEntity()
+	}
+
+	return detailEntities, nil
 }

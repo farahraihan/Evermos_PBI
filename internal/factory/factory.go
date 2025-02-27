@@ -75,7 +75,7 @@ func InitFactory(e *echo.Echo) {
 	ds := d_srv.NewDetailTransactionService(dq)
 
 	tq := t_rep.NewTransactionQuery(db)
-	ts := t_srv.NewTransactionService(tq, ds)
+	ts := t_srv.NewTransactionService(tq, ds, ps)
 	th := t_hnd.NewTransactionHandler(ts, jwt)
 
 	e.Pre(middleware.RemoveTrailingSlash())

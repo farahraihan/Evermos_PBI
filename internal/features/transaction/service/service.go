@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"evermos_pbi/internal/features/detailtransaction"
+	"evermos_pbi/internal/features/products"
 	"evermos_pbi/internal/features/transaction"
 	"log"
 )
@@ -10,16 +11,29 @@ import (
 type TransactionServices struct {
 	qry      transaction.TQuery
 	dService detailtransaction.DService
+	pService products.PService
 }
 
-func NewTransactionService(q transaction.TQuery, d detailtransaction.DService) transaction.TService {
+func NewTransactionService(q transaction.TQuery, d detailtransaction.DService, p products.PService) transaction.TService {
 	return &TransactionServices{
 		qry:      q,
 		dService: d,
+		pService: p,
 	}
 }
 
 func (ts *TransactionServices) AddTransaction(newTransaction transaction.Transaction, detail transaction.DetailTransaction2) error {
+	isStock, err := ts.pService.IsStock(detail.ProductID, detail.Quantity)
+	if err != nil {
+		log.Println("failed to check stock in product: ", err)
+		return errors.New("failed to check stock")
+	}
+
+	if !isStock {
+		log.Println("Insufficient stock")
+		return errors.New("insufficient stock: the requested quantity exceeds available stock")
+	}
+
 	trxID, err := ts.qry.CheckTransactionInCart(newTransaction.UserID)
 	if err != nil {
 		log.Println("failed to check in cart: ", err)
@@ -57,8 +71,11 @@ func (ts *TransactionServices) AddTransaction(newTransaction transaction.Transac
 
 	if isProduct {
 		err = ts.dService.UpdateDetailTransaction(newDetailTransaction.ProductID, newDetailTransaction.TransactionID, newDetailTransaction.Quantity)
-		log.Println("update detail transaction query error: ", err)
-		return errors.New("failed to update detail transaction, please try again later")
+		if err != nil {
+			log.Println("update detail transaction query error: ", err)
+			return errors.New("failed to update detail transaction, please try again later")
+		}
+		return nil
 	}
 
 	err = ts.dService.AddDetailTransaction(newDetailTransaction)
@@ -128,6 +145,24 @@ func (ts *TransactionServices) UpdateTransaction(userID uint, transactionID uint
 	if err != nil {
 		log.Println("update status transaction query error : ", err)
 		return errors.New("failed to update transaction, please try again later")
+	}
+
+	if status == "canceled" {
+		return nil
+	}
+
+	details, err := ts.dService.GetDetailTransactions(transactionID)
+	if err != nil {
+		log.Println("get detail transaction query error: ", err)
+		return errors.New("failed to get detail transaction, please try again later")
+	}
+
+	for _, detail := range details {
+		err := ts.pService.DecreaseStock(detail.ProductID, detail.Quantity)
+		if err != nil {
+			log.Printf("failed to decrease stock for productID %d: %v", detail.ProductID, err)
+			return errors.New("failed to update product stock, please try again later")
+		}
 	}
 
 	return nil

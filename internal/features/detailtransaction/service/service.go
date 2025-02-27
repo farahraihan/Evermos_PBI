@@ -46,6 +46,17 @@ func (ds *DetailTransactionServices) DeleteDetailTransaction(productID uint, tra
 	return nil
 }
 
+func (ds *DetailTransactionServices) GetDetailTransactions(transactionID uint) ([]detailtransaction.DetailTransaction, error) {
+	details, err := ds.qry.GetDetailTransactions(transactionID)
+
+	if err != nil {
+		log.Println("get details by transactionID query error: ", err)
+		return nil, errors.New("failed to retrieve detail transaction data, please try again later")
+	}
+
+	return details, nil
+}
+
 func (ds *DetailTransactionServices) IsProductInDetail(productID uint, transactionID uint) (bool, error) {
 	return ds.qry.IsProductInDetail(productID, transactionID)
 }

@@ -46,6 +46,10 @@ func (th *TransactionHandler) AddTransaction() echo.HandlerFunc {
 		newDetailTransaction := AddToDetailTransaction(input)
 		err = th.srv.AddTransaction(newTransaction, newDetailTransaction)
 		if err != nil {
+			if err.Error() == "insufficient stock: the requested quantity exceeds available stock" {
+				log.Println("failed add product to cart", err)
+				return c.JSON(http.StatusInternalServerError, helpers.ResponseFormat(http.StatusInternalServerError, "failed", "insufficient stock", nil))
+			}
 			log.Println("failed add product to cart", err)
 			return c.JSON(http.StatusInternalServerError, helpers.ResponseFormat(http.StatusInternalServerError, "failed", "failed add product to cart", nil))
 		}
