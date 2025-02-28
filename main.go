@@ -1,20 +1,22 @@
 package main
 
 import (
-	"net/http"
-
 	"evermos_pbi/internal/factory"
+	"os"
 
 	"github.com/labstack/echo/v4"
 )
 
-var e *echo.Echo
+func main() {
+	e := echo.New()
 
-func init() {
-	e = echo.New()
 	factory.InitFactory(e)
-}
 
-func Handler(w http.ResponseWriter, r *http.Request) {
-	e.ServeHTTP(w, r)
+	// Gunakan port dari environment (default ke 3000 untuk Vercel)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	e.Logger.Fatal(e.Start(":" + port))
 }
