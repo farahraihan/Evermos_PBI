@@ -26,5 +26,3 @@ Evermos Commerce merupakan sebuah project backend sederhana yang dirancang untuk
 
 ## 📋 API Documentation (OpenAPI Swagger) 
 Explore Details Evermos Commerce Documentation (OpenAPI) :[OpenAPI](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
-
-
