@@ -1,21 +1,20 @@
 package main
 
 import (
+	"net/http"
+
 	"evermos_pbi/internal/factory"
-	"os"
 
 	"github.com/labstack/echo/v4"
 )
 
-func main() {
-	e := echo.New()
+var e *echo.Echo
 
+func init() {
+	e = echo.New()
 	factory.InitFactory(e)
+}
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8000"
-	}
-
-	e.Logger.Fatal(e.Start(":" + port))
+func Handler(w http.ResponseWriter, r *http.Request) {
+	e.ServeHTTP(w, r)
 }
