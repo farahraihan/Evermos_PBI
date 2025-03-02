@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"evermos_pbi/internal/factory"
@@ -11,10 +11,4 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	e := echo.New()
 	factory.InitFactory(e)
 	e.ServeHTTP(w, r)
-}
-
-func main() {
-	e := echo.New()
-	factory.InitFactory(e)
-	e.Logger.Fatal(e.Start(":8000"))
 }
