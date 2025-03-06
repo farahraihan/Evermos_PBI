@@ -27,5 +27,5 @@ Evermos Commerce merupakan sebuah project backend sederhana yang dirancang untuk
 ## 📋 API Documentation (POSTMAN)
 Explore Details Evermos Commerce Documentation (OpenAPI) :[API Documentation](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
 
-## 📋 API Deployment
+## 🚀 Live Demo Evermos Commerce
 Run API Collection :[Launch API](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
