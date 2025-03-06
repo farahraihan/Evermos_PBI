@@ -24,5 +24,8 @@ Evermos Commerce merupakan sebuah project backend sederhana yang dirancang untuk
 ![VSCode](https://img.shields.io/badge/VSCode-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white) 
 
-## 📋 API Documentation (OpenAPI Swagger) 
-Explore Details Evermos Commerce Documentation (OpenAPI) :[OpenAPI](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
+## 📋 API Documentation (POSTMAN)
+Explore Details Evermos Commerce Documentation (OpenAPI) :[API Documentation](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
+
+## 📋 API Deployment
+Run API Collection :[Launch API](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
