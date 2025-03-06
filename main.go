@@ -2,6 +2,7 @@ package main
 
 import (
 	"evermos_pbi/internal/factory"
+	"os"
 
 	"github.com/labstack/echo/v4"
 )
@@ -9,7 +10,11 @@ import (
 func main() {
 	e := echo.New()
 
-	factory.InitFactory(e)
-	e.Logger.Error(e.Start(":8000"))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000" // default port
+	}
 
+	factory.InitFactory(e)
+	e.Logger.Fatal(e.Start(":" + port))
 }
