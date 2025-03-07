@@ -1,19 +1,15 @@
-<div align="center">
-
 # **Evermos Commerce**
-
-</div>
 
 ## 📚 About the Project
 
-Evermos Commerce merupakan sebuah project backend sederhana yang dirancang untuk Final Project Based Internship Evermos x Rakamin. Project ini merupakan suatu Rest API e-commerce dengan studi kasus transaksi penjualan di Evermos.
-
+Evermos Commerce is a simple backend project designed for the Final Project Based Internship by Evermos x Rakamin. It’s a REST API for an e-commerce platform, using a case study of sales transactions at Evermos.
 
 ## 🗺️ ER Diagram 
 
 ![ER Diagram](/image/ERD.png)
 
 ## 🛠️ Library & Tools 
+
 ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white) 
 ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) 
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white) 
@@ -25,7 +21,71 @@ Evermos Commerce merupakan sebuah project backend sederhana yang dirancang untuk
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white) 
 
 ## 📋 API Documentation (POSTMAN)
-Explore Details Evermos Commerce Documentation (OpenAPI) : [API Documentation](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
+
+Explore Details Evermos Commerce Documentation (OpenAPI): [API Documentation](https://www.postman.com/winter-eclipse-666488/raka-project/folder/frnt7kt/rakaproject?action=share&creator=20691688&ctx=documentation)
 
 ## 🚀 Live Demo Evermos Commerce
-Run API Collection : [Launch API](https://app.swaggerhub.com/apis/FarahRaihanunnisa/Evermos/1.0.0)
+
+Run API Collection: [Launch API](https://inner-costanza-ictfarah-78b96350.koyeb.app/product)
+
+## 🏃 Running the Project Locally
+
+Follow these steps to run the Evermos Commerce project on your local machine:
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/evermos-commerce.git
+cd evermos-commerce
+```
+
+### 2. Set up environment variables
+
+Create a `.env` file in the root directory and add the necessary configurations:
+
+```plaintext
+DB_HOST=your_db_host
+DB_PORT=your_db_port
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
+JWT_SECRET=your_jwt_secret
+CLOUDINARY_URL=your_cloudinary_url
+```
+
+### 3. Install dependencies
+
+```bash
+go mod tidy
+```
+
+### 4. Run database migrations
+
+Ensure your PostgreSQL database is running, then migrate the database:
+
+```bash
+go run main.go migrate
+```
+
+### 5. Start the server
+
+```bash
+go run main.go
+```
+
+### 6. Access the API
+
+Once the server is running, you can access the API at:
+
+```plaintext
+http://localhost:8080
+```
+
+### 7. Test with Postman
+
+Import the Postman collection using the link above and test the available endpoints.
+
+---
+
+That’s it! You're all set to explore and test the Evermos Commerce API locally.
+
