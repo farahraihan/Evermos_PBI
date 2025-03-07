@@ -59,14 +59,6 @@ CLOUDINARY_URL=your_cloudinary_url
 go mod tidy
 ```
 
-### 4. Run database migrations
-
-Ensure your PostgreSQL database is running, then migrate the database:
-
-```bash
-go run main.go migrate
-```
-
 ### 5. Start the server
 
 ```bash
