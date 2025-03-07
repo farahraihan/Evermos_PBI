@@ -20,7 +20,7 @@ Evermos Commerce is a simple backend project designed for the Final Project Base
 ![VSCode](https://img.shields.io/badge/VSCode-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white) 
 
-## 📋 API Documentation (POSTMAN)
+## 📋 API Documentation (Postman)
 
 Explore Details Evermos Commerce Documentation (OpenAPI): [API Documentation](https://www.postman.com/winter-eclipse-666488/raka-project/folder/frnt7kt/rakaproject?action=share&creator=20691688&ctx=documentation)
 
@@ -35,8 +35,8 @@ Follow these steps to run the Evermos Commerce project on your local machine:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/evermos-commerce.git
-cd evermos-commerce
+git clone https://github.com/farahraihan/Evermos_PBI.git
+cd Evermos_PBI
 ```
 
 ### 2. Set up environment variables
